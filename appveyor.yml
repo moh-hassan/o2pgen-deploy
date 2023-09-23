@@ -1,0 +1,23 @@
+# Define the build version
+version: 0.1.0.{build}
+
+# Select the worker image
+image: Visual Studio 2022
+
+
+environment:
+  VERSION: v6.1.0
+  SIGNPATH_SIGNING_REQUEST_ID : "" 
+  SIGNPATH_SIGNING_REQUEST_STATUS : ""
+  SIGNPATH_ORGANIZATION_ID : 783237d7-f6db-4caa-b64e-a3fc87156006
+  SIGNPATH_SIGNING_POLICY_SLUG: test-signing
+  ARTIFACT_CONFIGURATION_SLUG: o2p2
+  SIGNPATH_PROJECT_SLUG : odata2poco  
+
+  SIGNPATH_CI_USER_TOKEN:
+    secure: fkMRmkT0HDBDna85gU5hTJnS4G7brD0xoc7YAtD001hqlRSgI4hCyCMtbeJZOYT1
+  SKIP_TESTS: true  
+  
+# Fake build script
+build_script:
+  - ps: ./run.ps1
