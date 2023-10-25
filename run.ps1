@@ -1,10 +1,7 @@
 # Copyright (c) Mohamed Hassan. All rights reserved. See License.md in the project root for license information.
 
-#md build
 
-
-
-Function Print
+Function Print-Request
 {
 	Write-Output "SIGNPATH_ORGANIZATION_ID: $($env:SIGNPATH_ORGANIZATION_ID)"
 	Write-Output "SIGNPATH_SIGNING_REQUESt_ID: $($env:SIGNPATH_SIGNING_REQUEST_ID)"
@@ -44,10 +41,23 @@ Expand-Archive -LiteralPath $Path  `
 function Get-Version 
 {    
     param ( [string]$FolderPath)
-    $files = Get-ChildItem -Path $FolderPath -Filter "*.nupkg" |  Select-Object -First 1     
-    $version = $files -replace  '^.+?\.(.+?)\.nupkg$' , '$1'    
-    return $version
+    $fileName = Get-ChildItem -Path $FolderPath -Filter "*.nupkg" |  Select-Object -First 1     
+    write-host $fileName 
+   $version = [regex]::Match($fileName, '\d+\.\d+\.\d+(-[\w\d-]+)?').Value
+    $isRelease = $version -match '^\d+\.\d+\.\d+$'
+    #set environment
+    $env:IS_RELEASE='false'
+    if ($isRelease -eq $true) {
+      $env:IS_RELEASE='true'
+    } 
+    $env:VERSION= $Version
+
+    return [PSCustomObject]@{
+        Version = $version
+        IsRelease = $isRelease
+    }
 }
+
 function Test-Data
 {
 	# for test only	 
@@ -58,6 +68,7 @@ function Test-Data
 
 Function Main 
 {
+     param ( [string]$FolderPath)
 	 #Test-Data
 	 
 	 if ( $env:SIGNPATH_SIGNING_REQUEST_STATUS -eq "Completed") {
@@ -67,13 +78,13 @@ Function Main
         Write-Host "Stop execution. SIGNING_REQUEST_STATUS = $($env:SIGNPATH_SIGNING_REQUEST_STATUS)"
 		return
       }
-	  Print
+	  Print-Request
 	  $env:SIGNPATH_SIGNING_REQUESt_ID | Set-Content "sr.txt"
 	  $artifact='./artifacts.zip'
       Download-Artifacts $artifact     
 	  unZip -Path $artifact
 	  Get-ChildItem
-	  $version=Get-Version  './signed'
-	  $env:VERSION= $version
+	  #$version=Get-Version  './signed'
+      $ver=Get-Version  $FolderPath
 	  
 }
