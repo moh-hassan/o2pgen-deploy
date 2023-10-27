@@ -1,23 +1,69 @@
-# Define the build version
-version: 0.1.0.{build}
+version: 1.0.0-{build}
 
-# Select the worker image
 image: Visual Studio 2022
-
-
-environment:
-  VERSION: v6.1.0
-  SIGNPATH_SIGNING_REQUEST_ID : "" 
-  SIGNPATH_SIGNING_REQUEST_STATUS : ""
-  SIGNPATH_ORGANIZATION_ID : 783237d7-f6db-4caa-b64e-a3fc87156006
-  SIGNPATH_SIGNING_POLICY_SLUG: test-signing
-  ARTIFACT_CONFIGURATION_SLUG: o2p2
-  SIGNPATH_PROJECT_SLUG : odata2poco  
-
-  SIGNPATH_CI_USER_TOKEN:
-    secure: fkMRmkT0HDBDna85gU5hTJnS4G7brD0xoc7YAtD001hqlRSgI4hCyCMtbeJZOYT1
-  SKIP_TESTS: true  
   
-# Fake build script
+
 build_script:
-  - ps: ./run.ps1
+  - ps: |           
+      $tag="6.2.0"
+      New-Item -Path '.\signed' -ItemType Directory      
+      # $root="https://github.com/moh-hassan/odata2poco/releases/download/v$tag"  
+      $root="https://ci.appveyor.com/api/buildjobs/520250i8xxa7r391/artifacts/signed%2F"      
+      appveyor DownloadFile "$root/OData2Poco.$tag.nupkg" -FileName ".\signed\OData2Poco.$tag.nupkg"
+      appveyor DownloadFile "$root/OData2Poco.$tag.snupkg" -FileName ".\signed\OData2Poco.$tag.snupkg"
+      appveyor DownloadFile "$root/OData2Poco.CommandLine.$tag.nupkg"  -FileName ".\signed\OData2Poco.CommandLine.$tag.nupkg"
+      appveyor DownloadFile "$root/OData2Poco.dotnet.o2pgen.$tag.nupkg"  -FileName ".\signed\OData2Poco.dotnet.o2pgen.$tag.nupkg"
+      appveyor DownloadFile "$root/odata2poco-commandline.$tag.nupkg" -FileName ".\signed\odata2poco-commandline.$tag.nupkg"
+      appveyor DownloadFile "$root/o2pgen.exe"  -FileName ".\signed\o2pgen.exe"
+    
+artifacts:
+- path: .\*.zip
+  name: zip    
+- path: .\sr.txt
+  name: sr    
+- path: .\signed\OData2Poco.dotnet.o2pgen*.nupkg
+  name: global_tool
+- path: .\signed\o2pgen.exe
+  name: o2p_exe
+- path: .\signed\OData2Poco.CommandLine.*.nupkg
+  name: o2pgen
+- path: .\signed\OData2Poco.*.nupkg
+  name: lib 
+- path: .\signed\OData2Poco.*.snupkg
+  name: symbol 
+- path: .\signed\OData2Poco-CommandLine.*.nupkg
+  name: choco_pkg 
+
+ 
+deploy:
+# Nuget
+- provider: NuGet
+  api_key: $(NUGET_KEY)
+  artifact: global_tool,o2pgen,lib,symbol 
+#  on: 
+#    SIGNING2: true     
+   
+
+#chocolatey    
+- provider: NuGet
+  server: https://push.chocolatey.org   
+  api_key: $(CHOCO_KEY)  
+  artifact: choco_pkg
+  on: 
+    SIGNING2: true  
+  
+# myget
+- provider: NuGet
+  server: https://www.myget.org/F/odata2poco/api/v2/package
+  api_key: $(MYGET_KEY)
+  symbol_server: https://www.myget.org/F/odata2poco/symbols/api/v2/package     
+  artifact: global_tool,o2pgen,lib,symbol,choco_pkg  
+#  on: 
+#    SIGNING2: true
+    
+init:
+   # uncomment
+   # - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+  
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object  net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
