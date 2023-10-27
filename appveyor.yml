@@ -83,7 +83,7 @@ deploy:
 # Nuget
 - provider: NuGet
   api_key:
-    secure: M6BmAgIuB9m8SKYqAbTb3TvDlOSA+FlymQ4jRtWqsRUGo8iK6QgGri5wDXCxqvRl
+    secure: FtItI1iPHsgWXFMptByS43NFy5c9hBCOPwbMGvTRm31WDh6bhvfMaSj+l11svpxk
   on:
     IS_RELEASE: true  
     SIGNING: true     
