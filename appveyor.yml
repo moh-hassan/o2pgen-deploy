@@ -5,16 +5,8 @@ image: Visual Studio 2022
 
 build_script:
   - ps: |           
-      $tag="6.2.0"
-      New-Item -Path '.\signed' -ItemType Directory      
-      # $root="https://github.com/moh-hassan/odata2poco/releases/download/v$tag"  
-      $root="https://ci.appveyor.com/api/buildjobs/520250i8xxa7r391/artifacts/signed%2F"      
-      appveyor DownloadFile "$root/OData2Poco.$tag.nupkg" -FileName ".\signed\OData2Poco.$tag.nupkg"
-      appveyor DownloadFile "$root/OData2Poco.$tag.snupkg" -FileName ".\signed\OData2Poco.$tag.snupkg"
-      appveyor DownloadFile "$root/OData2Poco.CommandLine.$tag.nupkg"  -FileName ".\signed\OData2Poco.CommandLine.$tag.nupkg"
-      appveyor DownloadFile "$root/OData2Poco.dotnet.o2pgen.$tag.nupkg"  -FileName ".\signed\OData2Poco.dotnet.o2pgen.$tag.nupkg"
-      appveyor DownloadFile "$root/odata2poco-commandline.$tag.nupkg" -FileName ".\signed\odata2poco-commandline.$tag.nupkg"
-      appveyor DownloadFile "$root/o2pgen.exe"  -FileName ".\signed\o2pgen.exe"
+        . ./run.ps1
+        Main
     
 artifacts:
 - path: .\*.zip
@@ -40,8 +32,8 @@ deploy:
 - provider: NuGet
   api_key: $(NUGET_KEY)
   artifact: global_tool,o2pgen,lib,symbol 
-#  on: 
-#    SIGNING2: true     
+  on: 
+    SIGNING2: true     
    
 
 #chocolatey    
