@@ -5,7 +5,7 @@ image: Visual Studio 2022
 
 
 environment:
-  VERSION: v6.1.0
+  VERSION: v6.3.1
 #  SIGNPATH_SIGNING_REQUEST_ID : "-" 
 #  SIGNPATH_SIGNING_REQUEST_STATUS : "-"
 #  SIGNPATH_ORGANIZATION_ID : 783237d7-f6db-4caa-b64e-a3fc87156006
@@ -49,8 +49,6 @@ artifacts:
   name: o2pgen
 - path: .\signed\OData2Poco.*.nupkg
   name: lib 
-- path: .\signed\OData2Poco.*.snupkg
-  name: symbol 
 - path: .\signed\OData2Poco-CommandLine.*.nupkg
   name: choco_pkg 
 
@@ -85,7 +83,7 @@ deploy:
   api_key: $(NUGET_KEY)
   on:   
     SIGNING: true     
-  artifact: global_tool,o2pgen,lib,symbol  
+  artifact: global_tool,o2pgen,lib  
 
 #chocolatey    
 - provider: NuGet
