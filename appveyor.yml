@@ -1,11 +1,11 @@
 # Define the build version
-version: 1.0.0-signed-{build}
+version: 6.3.3-signed-{build}
 
 image: Visual Studio 2022
 
 
 environment:
-  VERSION: v6.3.1
+  #SignVersion: 6.3.3
 #  SIGNPATH_SIGNING_REQUEST_ID : "-" 
 #  SIGNPATH_SIGNING_REQUEST_STATUS : "-"
 #  SIGNPATH_ORGANIZATION_ID : 783237d7-f6db-4caa-b64e-a3fc87156006
@@ -27,14 +27,9 @@ install:
   
 
 build_script:
-  - ps: |    
-       if ( $env:SIGNPATH_SIGNING_REQUEST_STATUS -eq "Completed") {  
+  - ps: |          
          . ./run.ps1 
-         Main './signed'
-       } else {
-         Write-Host "SIGNPATH_SIGNING_REQUEST_STATUS is not valid"
-         exit 1
-       }
+         Main './signed'       
     
 artifacts:
 - path: .\*.zip
@@ -58,7 +53,7 @@ deploy:
 - provider: GitHub
   auth_token: 
      secure: sB33uLo96nR+LGmYLdPmY/segb6d4O061N2e8Nbz6iyHg82D0RysMxWE5JKnXmU+
-  artifact: zip,sr,global_tool,o2pgen,lib,symbol,choco_pkg,o2p_exe   
+  artifact: zip,sr,global_tool,o2pgen,lib,choco_pkg,o2p_exe   
   force_update: true  
   prerelease: false  
   draft: true
@@ -69,11 +64,10 @@ deploy:
 - provider: GitHub
   auth_token:
      secure: sB33uLo96nR+LGmYLdPmY/segb6d4O061N2e8Nbz6iyHg82D0RysMxWE5JKnXmU+
-  artifact: global_tool,o2pgen,lib,symbol,choco_pkg,o2p_exe
-  tag: $(VERSION)
+  artifact: global_tool,o2pgen,lib,choco_pkg,o2p_exe
+  tag: $(SignVersion)
   force_update: true  
   prerelease: false  
-  draft: true
   repository: moh-hassan/odata2poco
   on:    
       SIGNING: true
@@ -99,7 +93,7 @@ deploy:
   api_key: $(MYGET_KEY)
   on:    
     SIGNING: true      
-  artifact: global_tool,o2pgen,lib,symbol,choco_pkg
+  artifact: global_tool,o2pgen,lib
   
   
 # init:
