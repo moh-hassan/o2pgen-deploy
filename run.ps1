@@ -60,15 +60,19 @@ function Get-Version
         IsRelease = $isRelease
     }
 }
-
+#mode of operation: test, manual publish, auto publish
 function Test-Data
 {
-    Write-Host "======Test===== "
-	# for test only	 
+    # for test only	 
+    Write-Host "======Test or re-publish artifacts manually===== "
+	# to ree-publish artifacts manually, set SIGNPATH_SIGNING_REQUESt_ID
 	 $env:SIGNPATH_SIGNING_REQUEST_STATUS = "Completed"
-	 $env:SIGNPATH_SIGNING_REQUESt_ID= '0c5459be-aed2-4932-9ceb-ebeb7b8877a6'
+     #Sr v6.3.2
+	 $env:SIGNPATH_SIGNING_REQUESt_ID= '79df1eb7-859b-4e6a-970a-ecbde334411f'
 	 #$env:VERSION='6.3.3'
-     $env:TEST_SIGNING='true' 
+     #$env:TEST_SIGNING='true' 
+     $env:Signing_Mode='manual'  #test, manual, auto
+     write-host "env:Signing_Mode= $($env:Signing_Mode)"
 }
 
 Function Main 

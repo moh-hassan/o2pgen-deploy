@@ -72,28 +72,28 @@ deploy:
   on:    
       SIGNING: true
 
-# # Nuget
-# - provider: NuGet
-#   api_key: $(NUGET_KEY)
-#   on:   
-#     SIGNING: true     
-#   artifact: global_tool,o2pgen,lib  
+# Nuget
+- provider: NuGet
+  api_key: $(NUGET_KEY)
+  on:   
+    SIGNING: true     
+  artifact: global_tool,o2pgen,lib  
 
-# #chocolatey    
-# - provider: NuGet
-#   server: https://push.chocolatey.org   
-#   api_key: $(CHOCO_KEY) 
-#   on:   
-#     SIGNING: true    
-#   artifact: choco_pkg
+#chocolatey    
+- provider: NuGet
+  server: https://push.chocolatey.org   
+  api_key: $(CHOCO_KEY) 
+  on:   
+    SIGNING: true    
+  artifact: choco_pkg
   
-# # myget
-# - provider: NuGet
-#   server: https://www.myget.org/F/odata2poco/api/v3/
-#   api_key: $(MYGET_KEY)
-#   on:    
-#     SIGNING: true      
-#   artifact: global_tool,o2pgen,lib
+# myget
+- provider: NuGet
+  server: https://www.myget.org/F/odata2poco/api/v3/
+  api_key: $(MYGET_KEY)
+  on:    
+    SIGNING: true      
+  artifact: global_tool,o2pgen,lib
   
   
 # init:
