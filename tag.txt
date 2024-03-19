@@ -1,0 +1,5 @@
+#test
+#mode: test, manual, auto
+Mode = manual
+Tag = v6.3.3-dev
+Sr = 79df1eb7-859b-4e6a-970a-ecbde334411f
