@@ -4,32 +4,31 @@ version: 6.3.3-signed-{build}
 image: Visual Studio 2022
 
 
-environment:
-  #SignVersion: 6.3.3
-#  SIGNPATH_SIGNING_REQUEST_ID : "-" 
-#  SIGNPATH_SIGNING_REQUEST_STATUS : "-"
-#  SIGNPATH_ORGANIZATION_ID : 783237d7-f6db-4caa-b64e-a3fc87156006
+environment:  
   SIGNPATH_SIGNING_POLICY_SLUG: release-signing
   ARTIFACT_CONFIGURATION_SLUG: o2p2
-  
 
-#  SIGNPATH_CI_USER_TOKEN:
-#    secure: fkMRmkT0HDBDna85gU5hTJnS4G7brD0xoc7YAtD001hqlRSgI4hCyCMtbeJZOYT1
- 
 
-install:
-#  - choco install gh
-  - ps: | 
-      #Write-Host "install powershell modules"  
-      # Install-Module -Name PowerShellForGitHub
-      # Install-Module -Name SignPath   
-      #dir env: >env.txt       
-  
+# init:
+#   - ps: |     
+#       $ver = $env:REPO_TAG_NAME	  
+#       try
+#         {         
+#           Update-AppveyorBuild -Version $ver 
+#           Write-Host "Update-AppveyorBuild Success to change version to TAG: '$env:REPO_TAG_NAME'"   -ForegroundColor Green          
+#         }
+#         catch
+#         {
+#           Write-Host "Update-AppveyorBuild Fail to change version to TAG: '$env:REPO_TAG_NAME'"   -ForegroundColor Red
+#           Write-Host "Exception Error: $PSItem.Exception.Message" -ForegroundColor Red
+#           #$env:CAN_PUBLISH = $false
+#         }
+#        Write-Host "REPO_TAG_NAME= '$env:REPO_TAG_NAME'" -ForegroundColor Yellow         
 
 build_script:
   - ps: |          
          . ./run.ps1 
-         Main       
+         Main './signed'       
     
 artifacts:
 - path: .\*.zip
@@ -65,7 +64,7 @@ artifacts:
 #   auth_token:
 #      secure: sB33uLo96nR+LGmYLdPmY/segb6d4O061N2e8Nbz6iyHg82D0RysMxWE5JKnXmU+
 #   artifact: global_tool,o2pgen,lib,choco_pkg,o2p_exe
-#   tag: $(SignVersion)
+#   tag: $(REPO_TAG_NAME)
 #   force_update: true  
 #   prerelease: false  
 #   repository: moh-hassan/odata2poco

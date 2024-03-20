@@ -1,0 +1,5 @@
+#test
+#mode: test, manual, auto
+Mode = manual
+REPO_TAG_NAME = v6.3.3-dev
+REQUESt_ID = 79df1eb7-859b-4e6a-970a-ecbde334411f

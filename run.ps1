@@ -1,14 +1,16 @@
 # Copyright (c) Mohamed Hassan. All rights reserved. See License.md in the project root for license information.
 
 #manuall download artifacts
+write-host "loading run.ps1"
 Function Get-Request
 {
-  param ([string] $fileName = "tag.txt")
+  param ([string] $fileName = "envirinment.txt")
   $request = Get-Content -Path $fileName | ConvertFrom-StringData
-  $env:SignVersion = $request.Tag
+  $env:REPO_TAG_NAME = $request.REPO_TAG_NAME
   $env:SIGNPATH_SIGNING_REQUEST_STATUS = "Completed"   
-  $env:SIGNPATH_SIGNING_REQUESt_ID = $request.Sr
-  write-host "Tag Version: $($request.Tag)"
+  $env:SIGNPATH_SIGNING_REQUESt_ID = $request.REQUESt_ID
+  write-host "REPO_TAG_NAME: $($request.REPO_TAG_NAME)"
+  write-host "REQUESt_ID: $($request.REQUESt_ID)"
   $request
 }
 
@@ -38,11 +40,13 @@ Function Write-Request {
     Write-Output "SIGNPATH_ORGANIZATION_ID: $($env:SIGNPATH_ORGANIZATION_ID)"
     Write-Output "SIGNPATH_SIGNING_REQUESt_ID: $($env:SIGNPATH_SIGNING_REQUEST_ID)"
     Write-Output "SIGNPATH_SIGNING_REQUEST_STATUS: $($env:SIGNPATH_SIGNING_REQUEST_STATUS)"
-    Write-Output "APPVEYOR_REPO_TAG_NAME: $($env:APPVEYOR_REPO_TAG_NAME)"
+    #Write-Output "APPVEYOR_REPO_TAG_NAME: $($env:APPVEYOR_REPO_TAG_NAME)"
+    Write-Output "REPO_TAG_NAME: $($env:REPO_TAG_NAME)"
 }
 
 Function Download-Artifacts {
     param ([string]$Output)
+    Write-Host "Downloading artifacts..." -ForegroundColor Yellow
     $CI_USER_TOKEN = $env:SIGNPATH_CI_USER_TOKEN
     $SIGNING_REQUEST_ID = $env:SIGNPATH_SIGNING_REQUESt_ID
     $ORGANIZATION_ID = $env:SIGNPATH_ORGANIZATION_ID
@@ -63,6 +67,7 @@ Function unZip {
         [string]$Path,
         [string]$Destination = '.\signed'  
     )
+    Write-Host "Unzipping artifacts..." -ForegroundColor Yellow
     Expand-Archive -LiteralPath $Path  -DestinationPath $Destination -Force
     Get-Sha256   .\signed
 }
@@ -80,7 +85,7 @@ function Get-Version {
     if ($isRelease -eq $true) {
         $env:IS_RELEASE = 'true'
     } 
-    $env:SignVersion = $Version
+    $env:REPO_TAG_NAME = $Version
     write-host "Package Version: $Version"
 
     return [PSCustomObject]@{
@@ -106,13 +111,15 @@ Function Main {
     param ( [string]$FolderPath = '.\signed')
     #set test environment
     #Test-Data #test only
-	Get-Request  #manual download artifacts 
+	#Get-Request  #manual download artifacts 
     if ( $env:SIGNPATH_SIGNING_REQUEST_STATUS -eq "Completed") {
         $env:SIGNING = 'true'      
     }
     else { 
         Write-Host "Stop execution. SIGNING_REQUEST_STATUS = $($env:SIGNPATH_SIGNING_REQUEST_STATUS)"
-        $env:SIGNING = 'false'         
+        $env:SIGNING = 'false'   
+        Exit-AppVeyorBuild 
+        exit 1
         return
     }
 
@@ -125,11 +132,11 @@ Function Main {
     $env:SIGNPATH_SIGNING_REQUESt_ID | Set-Content "sr.txt"
     $artifact = './artifacts.zip'
     Download-Artifacts $artifact     
-    unZip -Path $artifac
+    unZip -Path $artifact
            
-    #Get-Version  $FolderPath
-    Write-Host "env:SignVersion = $($env:SignVersion)"
+    Get-Version  $FolderPath
+    Write-Host "env:REPO_TAG_NAME = $($env:REPO_TAG_NAME)"
     Write-Host "env:SIGNING = $($env:SIGNING)"
-    Write-Host "Signed Artifacts will be pushed to GitHub TAG: $($env:SignVersion)"
+    Write-Host "Signed Artifacts is pushed to GitHub TAG: $($env:REPO_TAG_NAME)"
 	  
 }
