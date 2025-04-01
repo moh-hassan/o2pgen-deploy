@@ -2,17 +2,6 @@
 
 #manuall download artifacts
 write-host "loading run.ps1"
-Function Get-Request
-{
-  param ([string] $fileName = "envirinment.txt")
-  $request = Get-Content -Path $fileName | ConvertFrom-StringData
-  $env:REPO_TAG_NAME = $request.REPO_TAG_NAME
-  $env:SIGNPATH_SIGNING_REQUEST_STATUS = "Completed"   
-  $env:SIGNPATH_SIGNING_REQUESt_ID = $request.REQUESt_ID
-  write-host "REPO_TAG_NAME: $($request.REPO_TAG_NAME)"
-  write-host "REQUESt_ID: $($request.REQUESt_ID)"
-  $request
-}
 
 Function Get-Sha256 {
     param ([string] $directoryPath)
@@ -111,7 +100,7 @@ Function Main {
     param ( [string]$FolderPath = '.\signed')
     #set test environment
     #Test-Data #test only
-	#Get-Request  #manual download artifacts 
+
     if ( $env:SIGNPATH_SIGNING_REQUEST_STATUS -eq "Completed") {
         $env:SIGNING = 'true'      
     }
